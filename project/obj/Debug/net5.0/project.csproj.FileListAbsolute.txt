@@ -1,0 +1,15 @@
+/Users/jamessmith/Projects/project/project/bin/Debug/net5.0/project.deps.json
+/Users/jamessmith/Projects/project/project/bin/Debug/net5.0/project.runtimeconfig.json
+/Users/jamessmith/Projects/project/project/bin/Debug/net5.0/project.runtimeconfig.dev.json
+/Users/jamessmith/Projects/project/project/bin/Debug/net5.0/project.dll
+/Users/jamessmith/Projects/project/project/bin/Debug/net5.0/ref/project.dll
+/Users/jamessmith/Projects/project/project/bin/Debug/net5.0/project.pdb
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/project.csproj.AssemblyReference.cache
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/project.GeneratedMSBuildEditorConfig.editorconfig
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/project.AssemblyInfoInputs.cache
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/project.AssemblyInfo.cs
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/project.csproj.CoreCompileInputs.cache
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/project.dll
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/ref/project.dll
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/project.pdb
+/Users/jamessmith/Projects/project/project/obj/Debug/net5.0/project.genruntimeconfig.cache
