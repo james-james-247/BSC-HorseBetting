@@ -321,7 +321,7 @@ namespace project
 
             //Returning the winning name
             return oldName;
-            //LOVE YOU JAMES
+
         }
     }
 }
