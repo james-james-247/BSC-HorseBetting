@@ -4,29 +4,51 @@ using System.Linq;
 
 namespace project
 {
-    static class variables
+    class Information
     {
-        //Array Containing Current Competitors
-        public static string[,] competitors = new string[,] { { "Greywind", "0" }, { "Hallifax", "0" }, { "Ghost", "0" } };
-        //Number of Competitors
-        public static int NumCompetitors = competitors.Length;
+        public List<string> name = new List<string>() { "Greywind", "Halifax", "Pegasus", "Ghost", "Nymeria", "Lady", "Roach", "Shaggy"};
+        public List<int> wins = new List<int> () {1, 2, 3, 4, 5, 6, 7, 8};
 
-        //Money User Has
-        public static decimal wallet = 0;
-        //Bet the User Made
-        public static decimal currentBet = 0;
+        public void adding(string newName)
+        {
+            name.Add(newName);
+            wins.Add(0);
+            Console.WriteLine("- - - New Competitor Added: " + newName + " - - -");
+            Console.WriteLine();
+        }
+
+        public void minusing(string removeName) 
+        {
+            int position = name.IndexOf(removeName);
+            wins.RemoveAt(position);
+            foreach(int x in wins)
+            {
+                Console.WriteLine(x);
+            }
+            name.Remove(removeName);
+            foreach(string x in name)
+            {
+                Console.WriteLine(x);
+            }
+        }
 
         //Risk of Injuries Changing Over Time
-        public static int risk = 7;
+        public int risk = 0;
+
+        //Money User Has
+        public decimal wallet = 0;
+        //Bet the User Made
+        public decimal currentBet = 0;
+
 
         //Month Array and Weather Controller
-        public static string[,] months = new string[,] { { "Jan", "High" }, { "Feb", "High" }, { "Mar", "High" }, { "Apr", "Mild" }, { "May", "Low" }, { "Jun", "Low" }, { "Jul", "Low" }, { "Aug", "Low" }, { "Sep", "Mild" }, { "Oct", "Mild" }, { "Nov", "High" }, { "Dec", "High" } };
+        public string[,] months = new string[,] { { "Jan", "High" }, { "Feb", "High" }, { "Mar", "High" }, { "Apr", "Mild" }, { "May", "Low" }, { "Jun", "Low" }, { "Jul", "Low" }, { "Aug", "Low" }, { "Sep", "Mild" }, { "Oct", "Mild" }, { "Nov", "High" }, { "Dec", "High" } };
         //Controllers of Months
-        public static int monthCont = 1;
-        public static int monthMax = 12;
+        public int monthCont = 1;
         //Max Races Per Month 
-        public static int perMonth = 3;
+        public int perMonth = 3;
     }
+
 
 
     class Program
@@ -34,17 +56,18 @@ namespace project
         //Starting Class
         static void Main(string[] args)
         {
-            game();
+            var information = new Information();
+            game(information);
         }
 
 
         //
         //GAME
         //This is the Main Class That Controls The Game
-        static void game()
+        static void game(Information information)
         {
             //Sets the Weather
-            int weather = setWeather();
+            int weather = setWeather(information);
             switch (weather)
             {
                 case int n when (weather > 7):
@@ -67,7 +90,7 @@ namespace project
 
 
             //Dispalays the Current Odds
-            oddsCalc(weather);
+            string[] oddsArray = oddsCalc(weather, information);
 
 
 
@@ -75,7 +98,8 @@ namespace project
             Console.WriteLine("- - - Welcome! Please Choose a Competitor To Bet On: - - -");
             string chosenComp = Console.ReadLine().Trim();
 
-            Console.WriteLine("- - - Brilliant! Now How Much Would You Like To Bet? - - -");            decimal chosenAmount = decimal.Parse(Console.ReadLine().Trim());
+            Console.WriteLine("- - - Brilliant! Now How Much Would You Like To Bet? - - -");            
+            decimal chosenAmount = decimal.Parse(Console.ReadLine().Trim());
             decimal finalAmount = Math.Round(chosenAmount, 2);
 
             Console.WriteLine("- - - Top Class! Thats " + finalAmount + " On " + chosenComp + " - - -");
@@ -85,35 +109,35 @@ namespace project
 
 
             //Checks For Injuries
-            injuries(weather);
+            injuries(weather, information);
 
 
 
             //Runs the Race
-            string winner = race();
+            string winner = race(information, oddsArray);
 
 
 
             //Handling the Money
             if(chosenComp == winner)
             {
-                money(true, finalAmount, "10/1") ;
+                money(true, finalAmount, "10/1", information) ;
             }
             else
             {
-                money(false, finalAmount, "10/1");
+                money(false, finalAmount, "10/1", information);
             }
 
 
 
             //Calculates New Risk
-            if(variables.risk == 10)
+            if(information.risk == 10)
             {
-                variables.risk = 1;
-                variables.monthCont += 1;
-                if(variables.monthCont > 12)
+                information.risk = 1;
+                information.monthCont += 1;
+                if(information.monthCont > 12)
                 {
-                    variables.monthCont = 0;
+                    information.monthCont = 0;
                 }
                 Console.WriteLine("- ! - ! - ! Risk Got Too High! One Month Break Was Given - ! - ! - !");
                 Console.WriteLine();
@@ -121,24 +145,24 @@ namespace project
             }
             else
             {
-                variables.risk += 1;
+                information.risk += 1;
             }
 
 
 
             //Calcualtes Months
-            if (variables.perMonth == 3)
+            if (information.perMonth == 3)
             {
-                variables.monthCont += 1;
-                variables.perMonth = 1;
-                if (variables.monthCont > 12)
+                information.monthCont += 1;
+                information.perMonth = 1;
+                if (information.monthCont > 12)
                 {
-                    variables.monthCont = 0;
+                    information.monthCont = 0;
                 }
             }
             else
             {
-                variables.perMonth += 1;
+                information.perMonth += 1;
             }
 
 
@@ -147,17 +171,17 @@ namespace project
             Console.WriteLine("Type anything to continue! Type exit to exit");
             string answer = Console.ReadLine().Trim();
             if(answer == "exit") { }
-            else { game(); }
+            else { game(information); }
         }
 
             
         //
         //SETWEATHER
         //This Class Defines the Harshness of the Weather and Returns an INT
-        static int setWeather()
+        static int setWeather(Information information)
         {
             //Getting the Chance from Months
-            string chance = variables.months[variables.monthCont, 1];
+            string chance = information.months[information.monthCont, 1];
             //Preparing INT for Storage
             int randNum;
             switch (chance)
@@ -178,6 +202,7 @@ namespace project
                     randNum = new Random().Next(0, 10);
                     break;
             }
+
             //Returning Final Value
             return randNum;
         }
@@ -186,29 +211,32 @@ namespace project
         //
         //INJURIES
         //This Class Defines if an Injury Occours
-        static void injuries(int weather)
+        static void injuries(int weather, Information information)
         {
             //Collecting Our Needed Variables
-            int risk = variables.risk;
-            string[,] array = variables.competitors;
-            int comptNum = variables.NumCompetitors;
+            int risk = information.risk;
+            int comptNum = information.name.Count;
             int chance = weather + risk;
             string competitorName;
 
             //For Loop for Every Competitor
-            for(int i = 0; i < array.Length / 3; i++)
+            for(int i = 0; i < comptNum; i++)
             {
                 //Calculating a Final Random Number
                 int randNum = new Random().Next(0, chance);
                 if(randNum >= chance - 2)
                 {
-
-                    //Removing the Competitor From The Array
-                    array[i, 0].Remove(2);//To be finished
-
                     //Displaying That the Competitor Has Been Removed
-                    competitorName = variables.competitors[i, 0];
+                    competitorName = information.name[i];
+
+                    information.minusing(information.name[i]);
+
+                    
                     Console.WriteLine("- - - " + competitorName + " Injured and DNF - - -");
+
+
+                    //Adding a New Competitor To Replace The Removed One
+                    newCompetitor(information);
                 }
             }
         }
@@ -217,7 +245,7 @@ namespace project
         //
         //MONEY HANDLING
         //This Class Handles Money
-        static void money(bool victory, decimal bet, string odds)
+        static void money(bool victory, decimal bet, string odds, Information information)
         {
             //Splitting the Odds
             string[] finalOdds = odds.Split('/');
@@ -229,16 +257,16 @@ namespace project
                 //Takes the Odds and Calculates Winnings
                 moneyMade = bet * firstOdd;
                 //Adds Winnings To Wallet
-                variables.wallet += moneyMade;
-                Console.WriteLine("- - - Congrats Up To: £" + variables.wallet + " - - -");
+                information.wallet += moneyMade;
+                Console.WriteLine("- - - Congrats Up To: £" + information.wallet + " - - -");
                 Console.WriteLine();
                 Console.WriteLine();
             }
             else
             {
                 //Removes Bet From Wallet
-                variables.wallet -= bet;
-                Console.WriteLine("- - - Ouch Down To: £" + variables.wallet + " - - -");
+                information.wallet -= bet;
+                Console.WriteLine("- - - Ouch Down To: £" + information.wallet + " - - -");
                 Console.WriteLine();
                 Console.WriteLine();
             }
@@ -248,43 +276,104 @@ namespace project
         //
         //CALCULATING ODDS
         //This Class Will Determine the Odds For Every Competitors
-        static void oddsCalc(int weather)
+        static string[] oddsCalc(int weather, Information information)
         {
             //Collecting Variables
-            int numComp = variables.NumCompetitors;
-            int risk = variables.risk;
+            int numComp = information.name.Count;
+            int risk = information.risk;
 
+            //Calculating the Final Risk
             int weatherRisk = risk + weather;
-            string[,] arrayCopy = variables.competitors;
 
-            int[,] ordered = new int[,] { };
 
-            for(int i = 0; i < arrayCopy.Length / 2; i++)
+            //Bringing in All Lists and Converting To Arrays 
+            string[] compName = information.name.ToArray();
+            int[] compWins = information.wins.ToArray();
+
+            //Ordering this List Based on Number of Wins 
+            int[] orderedWins = information.wins.ToArray();
+            Array.Sort(orderedWins);
+            Array.Reverse(orderedWins);
+
+            //Creating the Final Array
+            string[] oddsArray = new string[8]{"", "", "", "", "", "", "", "" };
+
+            for (int i = 0; i < numComp; i++)
             {
-            
+                int finalOdd = 0;
+                string finalName = "";
+
+                //Adding Higher Odds if Weather is Better
+                if (weatherRisk > 12)
+                {
+                    finalOdd += 5;
+                }
+                else
+                {
+                    finalOdd += 10;
+                }
+
+
+                //Minusing 5 Just For Smaller Numbers
+                finalOdd -= 5;
+                   
+                //Adding the Counter in Increasing Order to Make Worse Competitors Have Higher Odds
+                finalOdd += i;
+
+                //If the Odd Ends At 1 Then Add One So The Player Can Win Something 
+                if (finalOdd == 1)
+                {
+                    finalOdd++;
+                }
+
+                //Converting it To String Because C# Arrays Have Turned Me Crazy and I Gave Up
+                string finalFinalOdd = finalOdd.ToString();
+
+                //Finding Who The New Odd Represents
+                foreach(int value in compWins)
+                {
+                    if(value == orderedWins[i])
+                    {
+                        finalName = compName[information.wins.IndexOf(orderedWins[i])];
+                    }
+                }
+
+                //Adding the Odd and Name To The Array
+                oddsArray[i] = finalName + "," + finalFinalOdd;
+
+                //Displaying the Odds To The Player
+                Console.WriteLine();
+                Console.WriteLine(finalName + " " + finalFinalOdd);
+                Console.WriteLine();
             }
+
+            //Returning the Odds Array
+            return oddsArray;
         }
 
 
         //
         //RACE
         //This Class is Where the Race is Held
-        static string race()
+        static string race(Information information, string[] oddsArray)
         {
             int oldWeight = 0;
             string oldName = "default";
 
-            string[,] array = new string[,] { { "James", "10" }, { "Jeff", "5" } };
-
-            for (int i = 0; i < array.Length / 2; i++)
+            for (int i = 0; i < oddsArray.Length; i++)
             {
-                //Take the odds
-                int odd = Int32.Parse(array[i, 1]);
+                //Taking Each Value in the Array
+                string split = oddsArray[i];
+                string[] newSplit = split.Split(",", 2);
 
+                //Take the Odds
+                int odd = Int32.Parse(newSplit[1]);
+
+                //Taking the Name and Weight  
                 int weight;
-                string name = array[i, 0];
+                string name = newSplit[0];
 
-                //Apply generic number based on odds
+                //Apply Generic Number Based on Odds
                 switch (odd)
                 {
                     case 1 when odd > 8:
@@ -307,21 +396,58 @@ namespace project
                         break;
                 }
 
-                //All competitors generate a random number with the higher the odds increasing the chance of getting a higher numebr
+                //All Competitors Generate a Random Number With the Higher the Odds Increasing the Chance of Getting a Higher Numebr
                 weight = weight * new Random().Next(2, 4);
 
                 if(weight > oldWeight)
                 {
+                    //Replacing Current Winner With New Winner
                     oldWeight = weight;
                     oldName = name;
                 }
             }
+
+            //Displaying Winner to the Player
             Console.WriteLine("- - - Winner: " + oldName + " - - -");
 
 
-            //Returning the winning name
+            //Returning the Winning Name
             return oldName;
+        }
 
+
+        //
+        //NEW COMPETITOR
+        //This Class Adds A New Competitor When One Gets Injured
+        static void newCompetitor(Information information)
+        {
+            int length = new Random().Next(4, 7);
+
+            Random random = new Random();
+            //Consonants Plus Some Special Specific Sounds Like Sh 
+            string[] consonants = { "b", "c", "d", "f", "g", "h", "j", "k", "l", "m", "l", "n", "p", "q", "r", "s", "sh", "zh", "t", "v", "w", "x" };
+            //Vowels Plus y 
+            string[] vowels = { "a", "e", "i", "o", "u", "y" };
+            string compName = "";
+
+            //This Gets The First Two Letters of The New Name
+            compName += consonants[random.Next(consonants.Length)].ToUpper();
+            compName += vowels[random.Next(vowels.Length)];
+
+            //This ensures the systems knows weve already added two letters
+            int started = 2; 
+
+            //length is Provided and Is Random
+            while (started < length)
+            {
+                compName += consonants[random.Next(consonants.Length)];
+                started++;
+                compName += vowels[random.Next(vowels.Length)];
+                started++;
+            }
+
+            //Sending New Value to be Added
+            information.adding(compName);
         }
     }
 }
