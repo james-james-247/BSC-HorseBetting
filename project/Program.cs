@@ -6,8 +6,8 @@ namespace project
 {
     class Information
     {
-        public List<string> name = new List<string>() { "Greywind", "Halifax", "Pegasus", "Ghost", "Nymeria", "Lady", "Roach", "Shaggy"};
-        public List<int> wins = new List<int> () {1, 2, 3, 4, 5, 6, 7, 8};
+        public List<string> name = new List<string>() { "Greywind", "Halifax", "Pegasus", "Ghost", "Nymeria", "Lady", "Roach", "Shaggy" };
+        public List<int> wins = new List<int>() { 1, 2, 3, 4, 5, 6, 7, 8 };
 
         public void adding(string newName)
         {
@@ -17,23 +17,22 @@ namespace project
             Console.WriteLine();
         }
 
-        public void minusing(string removeName) 
+        public void minusing(string removeName)
         {
             int position = name.IndexOf(removeName);
             wins.RemoveAt(position);
-            foreach(int x in wins)
-            {
-                Console.WriteLine(x);
-            }
             name.Remove(removeName);
-            foreach(string x in name)
-            {
-                Console.WriteLine(x);
-            }
+        }
+
+        public void addWin(string newName)
+        {
+            int position = name.IndexOf(newName);
+            int value = wins[position] + 1;
+            wins[position] = value;
         }
 
         //Risk of Injuries Changing Over Time
-        public int risk = 0;
+        public int risk = 7;
 
         //Money User Has
         public decimal wallet = 0;
@@ -48,8 +47,6 @@ namespace project
         //Max Races Per Month 
         public int perMonth = 3;
     }
-
-
 
     class Program
     {
@@ -71,32 +68,51 @@ namespace project
             switch (weather)
             {
                 case int n when (weather > 7):
-                    Console.WriteLine("- - - The Weather Is Looking Bad! Lowering Odds - - -");
-                    Console.WriteLine();
+                    Console.WriteLine("- - - The Weather Is Looking Bad! Lowering The Odds - - -");
                     Console.WriteLine();
                     break;
                 case int n when (weather > 4 && weather < 7):
-                    Console.WriteLine("- - - The Weather Is Looking Average! Potentionally Lowering Odds - - -");
-                    Console.WriteLine();
+                    Console.WriteLine("- - - The Weather Is Looking Average! Potentionally Lowering The Odds - - -");
                     Console.WriteLine();
                     break;
                 case int n when (weather > 0 && weather < 4):
-                    Console.WriteLine("- - - The Weather Is Looking Good! Odds Likley Wont Change - - -");
-                    Console.WriteLine();
+                    Console.WriteLine("- - - The Weather Is Looking Good! The Odds Likley Wont Change - - -");
                     Console.WriteLine();
                     break;
             }
+
+            //Displaying Current Amount In Wallet
+            Console.WriteLine("- - - You Currenty Have: £" + information.wallet + " - - -");
+            Console.WriteLine();
 
 
 
             //Dispalays the Current Odds
             string[] oddsArray = oddsCalc(weather, information);
-
+            int oddChosen = 0;
 
 
             //Asks for Users Bets
-            Console.WriteLine("- - - Welcome! Please Choose a Competitor To Bet On: - - -");
-            string chosenComp = Console.ReadLine().Trim();
+            int looper = 0;
+            string chosenComp = "";
+            Console.WriteLine("- - - Welcome! Please Choose a Competitor From Above To Bet On: - - -");
+            while (looper == 0)
+            {
+                chosenComp = Console.ReadLine().Trim();
+                foreach(string value in oddsArray)
+                {
+                    string[] arrayBreakdown = value.Split(",");
+                    if(arrayBreakdown[0].ToLower() == chosenComp.ToLower())
+                    {
+                        oddChosen = Int32.Parse(arrayBreakdown[1]);
+                        looper = 1;
+                    }
+                }
+                if(looper == 0)
+                {
+                    Console.WriteLine("- - - Welcome! Please Choose a Competitor From Above To Bet On: - - -");
+                }
+            }
 
             Console.WriteLine("- - - Brilliant! Now How Much Would You Like To Bet? - - -");            
             decimal chosenAmount = decimal.Parse(Console.ReadLine().Trim());
@@ -119,7 +135,7 @@ namespace project
 
 
             //Handling the Money
-            if(chosenComp == winner)
+            if(chosenComp.ToLower() == winner.ToLower())
             {
                 money(true, finalAmount, "10/1", information) ;
             }
@@ -220,7 +236,7 @@ namespace project
             string competitorName;
 
             //For Loop for Every Competitor
-            for(int i = 0; i < comptNum; i++)
+            for(int i = 0; i < 7; i++)
             {
                 //Calculating a Final Random Number
                 int randNum = new Random().Next(0, chance);
@@ -278,6 +294,8 @@ namespace project
         //This Class Will Determine the Odds For Every Competitors
         static string[] oddsCalc(int weather, Information information)
         {
+            Console.WriteLine("Odds Sheet:");
+            Console.WriteLine("- - - - - - - - - - ");
             //Collecting Variables
             int numComp = information.name.Count;
             int risk = information.risk;
@@ -306,7 +324,7 @@ namespace project
                 //Adding Higher Odds if Weather is Better
                 if (weatherRisk > 12)
                 {
-                    finalOdd += 5;
+                    finalOdd += 6;
                 }
                 else
                 {
@@ -316,7 +334,8 @@ namespace project
 
                 //Minusing 5 Just For Smaller Numbers
                 finalOdd -= 5;
-                   
+                finalOdd += new Random().Next(1, 3);
+
                 //Adding the Counter in Increasing Order to Make Worse Competitors Have Higher Odds
                 finalOdd += i;
 
@@ -342,10 +361,10 @@ namespace project
                 oddsArray[i] = finalName + "," + finalFinalOdd;
 
                 //Displaying the Odds To The Player
-                Console.WriteLine();
-                Console.WriteLine(finalName + " " + finalFinalOdd);
-                Console.WriteLine();
+                Console.WriteLine(finalName + " at " + finalFinalOdd + "/1");
+                Console.WriteLine("- - - - - - - - - - ");
             }
+            Console.WriteLine();
 
             //Returning the Odds Array
             return oddsArray;
@@ -410,6 +429,8 @@ namespace project
             //Displaying Winner to the Player
             Console.WriteLine("- - - Winner: " + oldName + " - - -");
 
+            //Adding Score to List
+            information.addWin(oldName);
 
             //Returning the Winning Name
             return oldName;
